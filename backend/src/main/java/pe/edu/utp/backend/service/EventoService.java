@@ -1,0 +1,18 @@
+package pe.edu.utp.backend.service;
+
+import pe.edu.utp.backend.entity.Evento;
+
+import java.util.List;
+
+public interface EventoService {
+
+    List<Evento> listar();
+
+    Evento buscarPorId(Long id);
+
+    Evento guardar(Evento evento);
+
+    Evento actualizar(Long id, Evento evento);
+
+    void eliminar(Long id);
+}
