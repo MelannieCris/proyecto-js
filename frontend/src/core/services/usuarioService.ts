@@ -3,7 +3,7 @@ import type { Usuario } from "../model/usuario";
 export interface ApiError extends Error {
   response?: {
     status: number;
-    data: unknown; 
+    data: unknown;
   };
 }
 
@@ -12,7 +12,16 @@ export interface Credenciales {
   contrasena: string;
 }
 
+export interface RegistroUsuarioDTO {
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  correo: string;
+  contrasena: string;
+}
+
 const API_URL = "http://localhost:8080/api/usuarios";
+
 async function apiRequest<T>(endpoint: string, method: string, data?: unknown): Promise<T> {
   const config: RequestInit = {
     method,
@@ -26,15 +35,14 @@ async function apiRequest<T>(endpoint: string, method: string, data?: unknown): 
 
   if (!response.ok) {
     const errorData = await response.text();
-    const error = new Error(errorData || "Error en la petición") as ApiError;
+    const error: ApiError = new Error(errorData || "Error en la petición");
     error.response = { status: response.status, data: errorData };
     throw error;
   }
 
-  return (await response.json()) as T;
+  const text = await response.text();
+  return (text ? JSON.parse(text) : {}) as T;
 }
-
-
 
 export const loginUsuario = (credenciales: Credenciales): Promise<Usuario> => 
   apiRequest<Usuario>("/login", "POST", credenciales);
@@ -42,7 +50,7 @@ export const loginUsuario = (credenciales: Credenciales): Promise<Usuario> =>
 export const loginAdministrador = (credenciales: Credenciales): Promise<Usuario> => 
   apiRequest<Usuario>("/login-admin", "POST", credenciales);
 
-export const registrarUsuario = (nuevoUsuario: Omit<Usuario, "idUsuario" | "rol">): Promise<Usuario> => 
+export const registrarUsuario = (nuevoUsuario: RegistroUsuarioDTO): Promise<Usuario> => 
   apiRequest<Usuario>("/registro", "POST", nuevoUsuario);
 
 export const actualizarUsuario = (id: number, datosUsuario: Partial<Usuario>): Promise<Usuario> => 

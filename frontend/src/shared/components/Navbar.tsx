@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/img/logo v2.png";
+import { cerrarSesion } from "../utils/cerrarsesion";
 // import { cerrarSesion } from "../utils/usuario";
 
 export default function Navbar() {
@@ -113,7 +114,7 @@ export default function Navbar() {
                     className="nav-link btn btn-link text-start"
                     style={{ textDecoration: "none" }}
                     onClick={() => {
-                      //   cerrarSesion();
+                      cerrarSesion();
                       navigate("/");
                     }}
                   >
