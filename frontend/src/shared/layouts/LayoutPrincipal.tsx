@@ -1,17 +1,12 @@
+import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
-interface IProps {
-  children: React.ReactNode;
-}
-
-export default function LayoutPrincipal({ children }: IProps) {
+export default function LayoutPrincipal() {
   return (
     <>
       <Navbar />
-
-      {children}
-
+      <Outlet />
       <Footer />
     </>
   );

@@ -9,6 +9,12 @@ export interface PromocionResponse {
   maximoUsos: number;
 }
 
+export interface ValidarPromocionResponse {
+  mensaje: string;
+  valido: boolean;
+  descuento: number;
+}
+
 export interface PromocionRequest {
   codigo: string;
   descuentoPorcentaje: number;

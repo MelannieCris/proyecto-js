@@ -13,7 +13,6 @@ export default function Cargando() {
       >
         <div
           className="spinner-border text-danger mb-4"
-          role="status"
           aria-label="Cargando"
           style={{ width: "4rem", height: "4rem" }}
         >

@@ -1,134 +1,47 @@
-import { useState } from "react";
 import { FaCheckCircle, FaEye, FaEyeSlash, FaSignInAlt } from "react-icons/fa";
 import styles from "../styles/Login.module.css";
-import LayoutPrincipal from "../../../shared/layouts/LayoutPrincipal";
-import { loginUsuario } from "../../../core/services/usuarioService";
+import { useLogin } from "../hooks/useLogin";
+import type { TextosIdioma } from "../interfaces/LoginTypes";
 
-interface TextosIdioma {
-  welcome: string;
-  successTitle: string;
-  success: string;
-  continue: string;
-  subtitle: string;
-  badge: string;
-  email: string;
-  emailPlaceholder: string;
-  password: string;
-  passwordPlaceholder: string;
-  login: string;
-  forgot: string;
-  register: string;
-  errorEmail: string;
-  errorPass: string;
-  errorInvalidEmail: string;
-  errorAuth: string;
-  footer?: string;
-}
+const getLoginButtonText = (isLoading: boolean, language: string, t: TextosIdioma): string => {
+  if (isLoading) {
+    return language === "es" ? "Ingresando..." : "Signing in...";
+  }
+  return t.login;
+};
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const texts: Record<"es" | "en", TextosIdioma> = {
-    es: {
-      welcome: "¡Bienvenido a Ticket Plus+!",
-      successTitle: "Bienvenido a Ticket Plus+ 🥳",
-      success: "Login exitoso",
-      continue: "Continuar",
-      subtitle: "Ingresa para vivir la mejor experiencia en eventos.",
-      badge: "Inicio de Sesión",
-      email: "Correo Electrónico",
-      emailPlaceholder: "Ingresa tu correo",
-      password: "Contraseña",
-      passwordPlaceholder: "Ingresa tu contraseña",
-      login: "Ingresar",
-      forgot: "¿Olvidaste tu contraseña?",
-      register: "¿Aún no tienes cuenta? Regístrate",
-      errorEmail: "Debes ingresar el correo",
-      errorPass: "Debes ingresar la contraseña",
-      errorInvalidEmail: "Correo no válido",
-      errorAuth: "Correo o contraseña incorrectos",
-    },
-
-    en: {
-      welcome: "Welcome to Ticket Plus+!",
-      successTitle: "Welcome to Ticket Plus+ 🥳",
-      success: "Login successful",
-      continue: "Continue",
-      subtitle: "Sign in for the best event experience.",
-      badge: "Login",
-      email: "Email Address",
-      emailPlaceholder: "Enter your email",
-      password: "Password",
-      passwordPlaceholder: "Enter your password",
-      login: "Sign In",
-      forgot: "Forgot your password?",
-      register: "Don't have an account yet? Sign up",
-      errorEmail: "You must enter your email",
-      errorPass: "You must enter your password",
-      errorInvalidEmail: "Invalid email",
-      errorAuth: "Invalid email or password",
-    },
-  };
-
-  const t = texts[language];
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const newErrors: string[] = [];
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (email.trim() === "") {
-      newErrors.push(t.errorEmail);
-    } else if (!emailRegex.test(email)) {
-      newErrors.push(t.errorInvalidEmail);
-    }
-
-    if (password.trim() === "") {
-      newErrors.push(t.errorPass);
-    }
-
-    setErrors(newErrors);
-
-    if (newErrors.length === 0) {
-      try {
-        const data = await loginUsuario({
-          correo: email,
-          contrasena: password,
-        });
-
-        if (data) {
-          localStorage.setItem("user", JSON.stringify(data));
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error("Error capturado:", error);
-        setErrors([t.errorAuth]);
-      }
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
+    errors,
+    language,
+    setLanguage,
+    isLoggedIn,
+    isLoading,
+    t,
+    handleSubmit,
+    handleNavigateHome,
+    handleNavigateRegistro,
+  } = useLogin();
 
   return (
-    <LayoutPrincipal>
-      <div className={`container-fluid p-0 ${styles.page}`}>
-        {/* MODAL ÉXITO */}
+    <div className={`container-fluid p-0 ${styles.page}`}>
         {isLoggedIn && (
           <div className={styles.modalOverlay}>
-            <div className={`${styles.modalBox}`}>
+            <div className={styles.modalBox}>
               <FaCheckCircle
                 className="text-success mb-3"
                 style={{ fontSize: "3rem" }}
               />
-
               <h2 className="fw-bold mb-1" style={{ color: "#333" }}>
                 {t.successTitle}
               </h2>
-
               <p className="text-muted mb-4">{t.success}</p>
-
               <button
                 className="btn btn-success w-100 py-2 fw-bold"
                 style={{
@@ -136,7 +49,7 @@ function Login() {
                   border: "none",
                   borderRadius: "10px",
                 }}
-                onClick={() => (window.location.href = "/")}
+                onClick={handleNavigateHome}
               >
                 {t.continue}
               </button>
@@ -146,87 +59,85 @@ function Login() {
 
         <div className="row g-0 vh-100">
           <div className="col-md-6 d-flex flex-column justify-content-center align-items-center bg-white p-4 shadow">
-            <div className="mb-4">
-              <span
-                className="px-2"
+            <fieldset className="mb-4 border-0 p-0" aria-label="Selección de idioma">
+              <button
+                type="button"
+                className="px-2 btn btn-link text-decoration-none p-0"
                 onClick={() => setLanguage("es")}
                 style={{
-                  cursor: "pointer",
                   fontWeight: language === "es" ? "bold" : "normal",
                   color: language === "es" ? "#dc3545" : "black",
                 }}
+                aria-pressed={language === "es"}
               >
                 ES
-              </span>
-
-              <span className="text-muted">|</span>
-
-              <span
-                className="px-2"
+              </button>
+              <span className="text-muted mx-1" aria-hidden="true">|</span>
+              <button
+                type="button"
+                className="px-2 btn btn-link text-decoration-none p-0"
                 onClick={() => setLanguage("en")}
                 style={{
-                  cursor: "pointer",
                   fontWeight: language === "en" ? "bold" : "normal",
                   color: language === "en" ? "#dc3545" : "black",
                 }}
+                aria-pressed={language === "en"}
               >
                 EN
-              </span>
-            </div>
+              </button>
+            </fieldset>
 
-            <form className={styles.formWrapper} onSubmit={handleSubmit}>
+            <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
               <div className="text-center mb-4">
                 <div className="badge bg-danger mb-2 px-3 py-2 text-uppercase">
                   {t.badge}
                 </div>
-
                 <h2 className="fw-bold text-dark m-0">{t.welcome}</h2>
-
                 <p className="text-muted small">{t.subtitle}</p>
               </div>
+
               <div className="mb-3">
-                <label className="fw-semibold text-muted small mb-1">
+                <label htmlFor="email" className="fw-semibold text-muted small mb-1">
                   {t.email}
                 </label>
-
                 <input
+                  id="email"
                   type="email"
-                  className="form-control form-control-lg shadow-sm"
+                  className={`form-control form-control-lg shadow-sm ${errors.length > 0 && email.trim() === "" ? "is-invalid" : ""}`}
                   placeholder={t.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
               </div>
 
               <div className="mb-3">
-                <label className="fw-semibold text-muted small mb-1">
+                <label htmlFor="password" className="fw-semibold text-muted small mb-1">
                   {t.password}
                 </label>
-
                 <div className="input-group">
                   <input
+                    id="password"
                     type={showPassword ? "text" : "password"}
-                    className="form-control form-control-lg shadow-sm border-end-0"
+                    className={`form-control form-control-lg shadow-sm border-end-0 ${errors.length > 0 && password.trim() === "" ? "is-invalid" : ""}`}
                     placeholder={t.passwordPlaceholder}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                   />
-
-                  <span
+                  <button
+                    type="button"
                     className="input-group-text bg-white border-start-0 shadow-sm"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ cursor: "pointer" }}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </span>
+                  </button>
                 </div>
               </div>
+
               {errors.length > 0 && (
-                <div className="alert alert-danger py-2 small text-center border-0 shadow-sm">
-                  {errors.map((err, index) => (
-                    <div key={index}>{err}</div>
+                <div className="alert alert-danger py-2 small text-center border-0 shadow-sm" role="alert">
+                  {errors.map((err) => (
+                    <div key={err}>{err}</div>
                   ))}
                 </div>
               )}
@@ -234,23 +145,29 @@ function Login() {
               <button
                 type="submit"
                 className="btn btn-danger btn-lg w-100 mb-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                disabled={isLoading}
               >
-                <FaSignInAlt /> {t.login}
+                {isLoading ? (
+                  <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                ) : (
+                  <FaSignInAlt />
+                )}
+                {getLoginButtonText(isLoading, language, t)}
               </button>
 
               <div className="text-center mt-3 pt-3 border-top">
                 <div className="mb-2">
-                  <a href="#" className="text-decoration-none small text-muted">
+                  <span className="text-decoration-none small text-muted" style={{ cursor: "pointer" }}>
                     {t.forgot}
-                  </a>
+                  </span>
                 </div>
-
-                <a
-                  href="/registro"
-                  className="text-decoration-none small text-danger fw-bold"
+                <button
+                  type="button"
+                  onClick={handleNavigateRegistro}
+                  className="btn btn-link text-decoration-none small text-danger fw-bold p-0"
                 >
                   {t.register}
-                </a>
+                </button>
               </div>
             </form>
           </div>
@@ -260,15 +177,13 @@ function Login() {
           >
             <div className={styles.heroTextWrapper}>
               <h1 className="display-4 fw-bold m-0">Ticket Plus+</h1>
-
               <p className="lead opacity-75">
                 Tu entrada a los mejores eventos.
               </p>
             </div>
           </div>
         </div>
-      </div>
-    </LayoutPrincipal>
+    </div>
   );
 }
 

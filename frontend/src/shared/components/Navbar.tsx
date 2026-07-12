@@ -1,19 +1,17 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import logo from "../assets/img/logo v2.png";
-import { cerrarSesion } from "../utils/cerrarsesion";
-// import { cerrarSesion } from "../utils/usuario";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Navbar() {
-  const user = JSON.parse(localStorage.getItem("user") ?? "null");
-  const navigate = useNavigate();
-  const userRole = user?.rol?.nombreRol;
+  const { isAuthenticated, userRole, logout } = useAuth();
+
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? "nav-link active" : "nav-link";
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid p-0">
-        <a className="navbar-brand px-3" href="/">
+        <NavLink className="navbar-brand px-3" to="/">
           <img
             src={logo}
             alt="Ticket Plus Logo"
@@ -21,9 +19,8 @@ export default function Navbar() {
               height: "70px",
             }}
           />
-        </a>
+        </NavLink>
 
-        {/* BOTÓN MÓVIL (HAMBURGUESA) */}
         <button
           className="navbar-toggler mx-3"
           type="button"
@@ -36,7 +33,6 @@ export default function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* LINKS DEL MENÚ */}
         <div className="collapse navbar-collapse" id="menu">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 px-3 align-items-lg-center">
             <li className="nav-item">
@@ -50,7 +46,7 @@ export default function Navbar() {
               </NavLink>
             </li>
 
-            {user === null ? (
+            {!isAuthenticated ? (
               <>
                 <li className="nav-item">
                   <NavLink className={navLinkClass} to="/login">
@@ -73,7 +69,7 @@ export default function Navbar() {
                   </li>
                 )}
 
-                {userRole === "MANAGER" && (
+                {(userRole === "MANAGER" || userRole === "ADMIN") && (
                   <li className="nav-item">
                     <NavLink
                       className={({ isActive }: { isActive: boolean }) =>
@@ -83,22 +79,7 @@ export default function Navbar() {
                       }
                       to="/dashboard"
                     >
-                      Gestionar Eventos
-                    </NavLink>
-                  </li>
-                )}
-
-                {userRole === "ADMIN" && (
-                  <li className="nav-item">
-                    <NavLink
-                      className={({ isActive }: { isActive: boolean }) =>
-                        isActive
-                          ? "nav-link active text-danger fw-bold"
-                          : "nav-link text-danger"
-                      }
-                      to="/dashboard"
-                    >
-                      Panel Admin
+                      {userRole === "ADMIN" ? "Panel Admin" : "Gestionar Eventos"}
                     </NavLink>
                   </li>
                 )}
@@ -113,10 +94,7 @@ export default function Navbar() {
                   <button
                     className="nav-link btn btn-link text-start"
                     style={{ textDecoration: "none" }}
-                    onClick={() => {
-                      cerrarSesion();
-                      navigate("/");
-                    }}
+                    onClick={logout}
                   >
                     Cerrar Sesión
                   </button>

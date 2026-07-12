@@ -13,4 +13,4 @@ export type { EventoZonaPrecio } from "./eventoZonaPrecio";
 export type { EventoDTO } from "./EventoDTO";
 export type { UsuarioBackendDTO } from "./UsuarioBackendDTO";
 export type { DetalleCompraDTO } from "./DetalleCompraDTO";
-export type { PromocionRequest, PromocionResponse } from "./PromocionDTO";
+export type { PromocionRequest, PromocionResponse, ValidarPromocionResponse } from "./PromocionDTO";
