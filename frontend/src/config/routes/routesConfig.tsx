@@ -15,6 +15,11 @@ import VerBoletos from "../../modules/compras/pages/VerBoletos";
 import BoletoDetail from "../../modules/compras/pages/BoletoDetail";
 import Dashboard from "../../modules/dashboard/pages/Dashboard";
 import PaginaNoEncontrada from "../../modules/home/pages/PaginaNoEncontrada";
+import UsuarioForm from "../../modules/Formularios/UsuarioForm";
+import RolForm from "../../modules/Formularios/RolForm";
+import ZonaForm from "../../modules/Formularios/ZonaForm";
+import LugarForm from "../../modules/Formularios/LugarForm";
+import PromocionForm from "../../modules/Formularios/PromocionForm";
 
 export const routesConfig = [
   {
@@ -23,71 +28,43 @@ export const routesConfig = [
       {
         element: <LayoutHome />,
         children: [
-          {
-            index: true,
-            element: <Inicio />,
-          },
-          {
-            path: "informacion",
-            element: <Informacion />,
-          },
-          {
-            path: "evento/:id",
-            element: <EventDetail />,
-          },
+          { index: true, element: <Inicio /> },
+          { path: "informacion", element: <Informacion /> },
+          { path: "evento/:id", element: <EventDetail /> },
         ],
       },
       {
         element: <LayoutAuth />,
         children: [
-          {
-            path: "login",
-            element: <Login />,
-          },
-          {
-            path: "registro",
-            element: <Registro />,
-          },
-          {
-            path: "perfil",
-            element: <Perfil />,
-          },
+          { path: "login", element: <Login /> },
+          { path: "registro", element: <Registro /> },
+          { path: "perfil", element: <Perfil /> },
         ],
       },
       {
         element: <LayoutCompras />,
         children: [
-          {
-            path: "compras",
-            element: <Compras />,
-          },
-          {
-            path: "ver-boletos",
-            element: <VerBoletos />,
-          },
-          {
-            path: "boleto/:id",
-            element: <BoletoDetail />,
-          },
+          { path: "compras", element: <Compras /> },
+          { path: "ver-boletos", element: <VerBoletos /> },
+          { path: "boleto/:id", element: <BoletoDetail /> },
         ],
       },
       {
         element: <LayoutDashboard />,
         children: [
-          {
-            path: "dashboard",
-            element: <Navigate to="/dashboard/gestionar" replace />,
-          },
-          {
-            path: "dashboard/gestionar",
-            element: <Dashboard />,
-          },
+          { path: "dashboard", element: <Navigate to="/dashboard/gestionar" replace /> },
+          { path: "dashboard/gestionar", element: <Dashboard /> },
         ],
       },
-      {
-        path: "*",
-        element: <PaginaNoEncontrada />,
-      },
+      // Formularios
+      { path: "usuario", element: <UsuarioForm /> },
+      { path: "rol", element: <RolForm /> },
+      { path: "zona", element: <ZonaForm /> },
+      { path: "lugar", element: <LugarForm /> },
+      { path: "promocion", element: <PromocionForm /> },
+
+      // Página no encontrada
+      { path: "*", element: <PaginaNoEncontrada /> },
     ],
   },
 ];
